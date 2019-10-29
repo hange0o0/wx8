@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="CreateMapRoadItemSkin" width="40" height="40" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Rect fillColor="0x000000" ellipseWidth="40" left="0" right="0" top="0" bottom="0" strokeWeight="2" strokeColor="0x444444"/>
+	<e:Label id="txt" text="12" horizontalCenter="0" verticalCenter="0" size="24"/>
+</e:Skin>

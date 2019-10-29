@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="DragHeroItemSkin" width="100" height="150" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Image id="arrowMC" source="arrow3_png" y="125" horizontalCenter="0"/>
+</e:Skin>

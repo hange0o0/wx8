@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="TowerItemSkin" width="64" height="64" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:ns1="*">
+	<e:Image id="disBottomMC" source="tower_dis_png" x="32" y="32" anchorOffsetX="50" anchorOffsetY="50" scale9Grid="12,12,76,76"/>
+	<e:Image id="disBottomMVMC" x="32" y="32" anchorOffsetX="50" anchorOffsetY="50" scale9Grid="12,12,76,76" source="tower_dis_mv_png"/>
+	<ns1:HPBar id="energyBar" skinName="HPBarSkin" horizontalCenter="0.5" currentState="s3" bottom="10"/>
+	<ns1:HPBar id="mpBar" skinName="HPBarSkin" currentState="s4" horizontalCenter="0.5" bottom="-5" x="10" y="10"/>
+</e:Skin>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="GameUISkin" width="640" height="1136" xmlns:e="http://ns.egret.com/eui" xmlns:ns1="*" xmlns:w="http://ns.egret.com/wing">
+	<e:Image id="bg" source="bg_1_jpg" left="0" right="0" top="0" bottom="0" fillMode="repeat"/>
+	<e:Group x="360" y="6.06" width="80" height="80" id="helpBtn">
+		<e:Image source="help_img_png" horizontalCenter="0" verticalCenter="0"/>
+	</e:Group>
+	<e:Group left="0" right="0" top="150" bottom="360" touchChildren="true" touchEnabled="true" touchThrough="false">
+		<e:Group id="mapCon" left="0" right="0" top="0" bottom="0"/>
+		<e:Group id="leftBtn" width="80" height="160" left="0" verticalCenter="0">
+			<e:Image source="arrow_btn2_png" scaleX="1" scaleY="1" verticalCenter="0" horizontalCenter="0"/>
+		</e:Group>
+		<e:Group id="rightBtn" width="80" height="160" verticalCenter="0" right="0">
+			<e:Image source="arrow_btn2_png" scaleX="-1" scaleY="1" verticalCenter="0" horizontalCenter="0"/>
+		</e:Group>
+	</e:Group>
+	<e:Group x="10" y="20">
+		<e:Image source="border_png" x="0" y="0" scale9Grid="31,6,37,42" width="210"/>
+		<e:Image source="coin_mc_png" x="9" y="9"/>
+		<e:Label id="coinText" text="Label" x="50" verticalCenter="0" size="24" textColor="0xfcd766"/>
+	</e:Group>
+	<e:Group x="230" y="20">
+		<e:Image source="border_png" x="0" y="0" scale9Grid="31,6,37,42" width="135"/>
+		<e:Image x="9" source="common_energy_png" scaleX="0.9" scaleY="0.9" verticalCenter="0"/>
+		<e:Label id="energyText" text="Label" x="50" verticalCenter="0" size="24" textColor="0xFCD766"/>
+	</e:Group>
+	<e:Group x="20" y="110">
+		<e:Image id="soundBtn" source="sound_btn1_png" x="0" y="9"/>
+		<e:Image id="rankBtn" source="rank_btn_png" x="20" y="37"/>
+		<e:Image id="feedBackBtn" source="feed_back_btn_png" x="60" y="0" scaleX="0.5" scaleY="0.5"/>
+		<e:layout>
+			<e:VerticalLayout gap="30"/>
+		</e:layout>
+	</e:Group>
+	<e:Image id="ad1" width="90" height="90" right="20" y="120"/>
+	<e:Image id="ad2" width="90" height="90" right="20" y="230"/>
+	<e:Group id="bottomGroup" x="0" bottom="0" width="640">
+		<e:Image source="main_bg_01_png" scale9Grid="13,13,84,84" y="0" x="0" width="100%"/>
+		<e:Group x="10" y="20">
+			<e:Group id="skillBtn" x="0" y="0" width="180" height="70">
+			<e:Image source="main_tab_02_png" x="0" verticalCenter="0"/>
+			<e:Label text="图鉴" x="70" bold="true" verticalCenter="0"/>
+			<e:Image id="skillRedMC" source="common_redpoint_01_png" right="0" top="0"/>
+			</e:Group>
+			<e:Group id="levelBtn" x="20" y="20" width="180" height="70">
+			<e:Image x="0" source="main_tab_01_png" verticalCenter="0"/>
+			<e:Label text="升级" x="70" bold="true" verticalCenter="0"/>
+			<e:Image id="levelRedMC" source="common_redpoint_01_png" right="0" top="0"/>
+			</e:Group>
+			<e:Group id="editBtn" x="-28" y="-1042" width="180" scaleX="1" scaleY="1" height="70">
+			<e:Image x="-4.56" source="main_icon_edit_png" scaleX="0.8" scaleY="0.8" verticalCenter="6"/>
+			<e:Label text="原创" bold="true" x="70" verticalCenter="0"/>
+			<e:Image id="equipRedMC" source="common_redpoint_01_png" right="0" top="0"/>
+			</e:Group>
+			<e:layout>
+			<e:HorizontalLayout gap="40"/>
+			</e:layout>
+		</e:Group>
+	</e:Group>
+	<e:Label id="levelText" text="第 1 关" horizontalCenter="0" size="30" y="120" bold="true" stroke="5"/>
+	<e:Group id="btnGroup" horizontalCenter="0" bottom="200">
+		<e:Group x="0" y="0">
+			<e:Group id="needEnergyGroup" y="-40" horizontalCenter="0">
+				<e:Image x="0" source="common_energy_png" scaleX="0.9" scaleY="0.9" y="0"/>
+				<e:Label id="needEnergyText" text="Label" x="41" size="24" textColor="0xFCD766" y="4"/>
+			</e:Group>
+			<e:Image id="startBtn" source="start_game_png" x="0" y="0"/>
+		</e:Group>
+		<e:Button id="swapBtn" label="扫荡" x="0" y="0" skinName="Btn1Skin" height="78" width="100"/>
+		<e:layout>
+			<e:HorizontalLayout gap="30" verticalAlign="middle"/>
+		</e:layout>
+	</e:Group>
+			</e:Skin>
