@@ -14,10 +14,12 @@ class PKSkillItem extends game.BaseItem{
     public monsterMV:HeroMVItem = new HeroMVItem();
     public stopMove = true;
     public id;
+    public stateFireMV
 
     public childrenCreated() {
         super.childrenCreated();
-        this.addBtnEvent(this.infoBtn,this.onClick)
+        this.addBtnEvent(this,this.onClick)
+        this.addBtnEvent(this.infoBtn,this.onInfoClick)
 
         this.addChildAt(this.monsterMV,0)
         this.monsterMV.x = 60;
@@ -28,7 +30,12 @@ class PKSkillItem extends game.BaseItem{
     }
 
     private onClick(e){
+        PKTowerUI.getInstance().setSelect(this.data);
+    }
 
+    private onInfoClick(e){
+        e.stopImmediatePropagation();
+        console.log('showInfo',this.data.id)
     }
 
 
@@ -41,11 +48,12 @@ class PKSkillItem extends game.BaseItem{
         this.monsterMV.load(this.data.id)
         this.monsterMV.stand();
         this.renewInfo();
+        this.renewSelect();
     }
 
-    public setSelect(data){
-        this.selectMC.visible = this.data == data;
-        this.infoBtn.visible = this.selectMC.visible;
+    public renewSelect(){
+        this.selectMC.visible = false
+        this.infoBtn.visible = this.data == PKTowerUI.getInstance().selectItem;
     }
 
     public onE(){
@@ -55,6 +63,33 @@ class PKSkillItem extends game.BaseItem{
     public renewInfo(){
         this.energyBar.data = {hp:this.data.energy,maxHp:this.data.maxEnergy};
         this.mpBar.data = {hp:this.data.mp,maxHp:this.data.maxMp};
+
+
+        var heroData = this.data
+        if(heroData.isEnergyFull())
+        {
+            if(!this.stateFireMV)
+            {
+                this.stateFireMV = new MovieSimpleSpirMC2()
+                this.stateFireMV.anchorOffsetX = 531/3/2
+                this.stateFireMV.anchorOffsetY = 532/2*0.8
+                this.stateFireMV.x = 50
+                this.stateFireMV.y = 140
+                this.stateFireMV.setData('effect18_png',531/3,532/2,5,84)
+                this.stateFireMV.widthNum = 3
+                this.stateFireMV.stop()
+            }
+
+            if(!this.stateFireMV.stage)
+            {
+                this.addChildAt(this.stateFireMV,0)
+                this.stateFireMV.play()
+            }
+        }
+        else if(this.stateFireMV && this.stateFireMV.stage) {
+            this.stateFireMV.stop()
+            MyTool.removeMC(this.stateFireMV)
+        }
     }
 
 }

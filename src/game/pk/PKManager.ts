@@ -17,10 +17,9 @@ class PKManager {
     public mAtkLevel = 0//魔法攻击力
     public mpLevel = 0//魔法上限
     public doubleLevel = 0//暴击率
-
-    public myHero = [5,2,3,4,1];
+    
     public posHero = []
-    public heroValue = {};
+    public heros = {};
 
     public initData(data) {
 
@@ -29,29 +28,75 @@ class PKManager {
         this.energy = energyData.v || 0;
         this.lastEnergyTime = energyData.t || 0;
 
-        var levels = data.playerLevel;
+        var levels = data.playerLevel || [];
         this.atkLevel = levels[0] || 0;
         this.mAtkLevel = levels[1] || 0;
         this.mpLevel = levels[2] || 0;
         this.doubleLevel = levels[3] || 0;
 
-        this.myHero = data.myHero || [1,2,3];
         this.posHero = data.posHero || [];
-        this.heroValue = data.heroValue || {};
-        this.myHero = [1,2,3,4,5]
+        this.heros = data.heros || {};
+
+        //默认初始的英雄
+        var initHero = [1,2,3,4,5]
+
+
+        this.heros = {};
+        if(_get['hero'])
+        {
+            initHero = [_get['hero']]
+            this.posHero = [];
+            GunVO.getObject(_get['hero']).energy = 1;
+        }
+
+
+
+        for(var i=0;i<initHero.length;i++)
+        {
+            var id = initHero[i];
+            if(!this.getHero(id))
+            {
+                this.addHero(id);
+            }
+        }
     }
+
+    public getBaseHeroData(){
+        return {
+            level:0,
+            quality:0,
+            point:[0,0,0,0],//分配的技能点
+            diamond:[],//宝石
+            skills:[],//技能
+        }
+    }
+
+
 
     public getHeroPos(id){
         return this.posHero.indexOf(id) + 1
+    }
+
+    public getHero(id){
+        return this.heros[id];
+    }
+    public addHero(id){
+        this.heros[id] = this.getBaseHeroData();
+    }
+
+    public getHeroLevel(id){
+        var hero = this.getHero(id);
+        if(!hero)
+            return 0;
+        return hero.level;
     }
 
     public getSave(){
         return {
             energy:{v:this.energy,t:this.lastEnergyTime},
             playerLevel:[this.atkLevel,this.mAtkLevel,this.mpLevel,this.doubleLevel],
-            myHero:this.myHero,
             posHero:this.posHero,
-            heroValue:this.heroValue,
+            heros:this.heros,
         }
     }
 

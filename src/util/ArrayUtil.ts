@@ -155,4 +155,33 @@ class ArrayUtil_wx4 {
         }
         return arr;
     }
+
+
+    //取最大的
+    public static getMaxValue(data:Array<any>, key):any{
+        var len = data.length
+        var maxItem;
+        for(var i=0;i<len;i++) {
+            var item = data[i];
+            if(!maxItem || maxItem[key] < item[key])
+            {
+                maxItem = item;
+            }
+        }
+        return maxItem;
+    }
+
+    //取最少的
+    public static getMinValue(data:Array<any>, key):any{
+        var len = data.length
+        var minItem = 0;
+        for(var i=0;i<len;i++) {
+            var item = data[i];
+            if(!minItem || minItem[key] > item[key])
+            {
+                minItem = item;
+            }
+        }
+        return minItem;
+    }
 }

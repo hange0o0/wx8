@@ -5,7 +5,7 @@
 			"name":"preload_png"
 		},
 		{
-			"keys":"enemy18_png,enemy46_png,enemy45_png,enemy44_png,enemy17_png,enemy16_png,enemy15_png,enemy74_png,enemy43_png,enemy14_png,enemy73_png,enemy41_png,enemy42_png,enemy72_png,enemy40_png,enemy12_png,enemy71_png,enemy36_png,enemy11_png,enemy9_png,enemy39_png,enemy69_png,enemy8_png,enemy7_png,enemy6_png,enemy5_png,enemy38_png,enemy68_png,enemy67_png,enemy66_png,enemy65_png,enemy64_png,enemy4_png,enemy63_png,enemy76_png,enemy70_png,enemy62_png,enemy61_png,effect2_png,960_json,enemy1_png,enemy2_png,enemy3_png,enemy31_png,enemy32_png,enemy33_png,enemy34_png,enemy35_png,enemy10_png,enemy13_png,enemy48_png,enemy77_png,400_json,320_json,113_json,113_png,114_json,114_png,115_json,115_png,m_shadow_mc_png,hero_1_png,hero_1_json,hero_2_png,102_1_png,102_2_png,hero_3_json,hero_3_png,103_1_png,103_2_png,hero_4_json,hero_4_png,104_1_png,104_2_png,hero_5_json,hero_5_png,105_1_png,105_2_png,113_1_png,113_2_png,114_1_png,114_2_png,115_1_png,115_2_png,hero_1_1_png,hero_1_2_png,hero_2_json",
+			"keys":"enemy18_png,enemy46_png,enemy45_png,enemy44_png,enemy17_png,enemy16_png,enemy15_png,enemy74_png,enemy43_png,enemy14_png,enemy73_png,enemy41_png,enemy42_png,enemy72_png,enemy40_png,enemy12_png,enemy71_png,enemy36_png,enemy11_png,enemy9_png,enemy39_png,enemy69_png,enemy8_png,enemy7_png,enemy6_png,enemy5_png,enemy38_png,enemy68_png,enemy67_png,enemy66_png,enemy65_png,enemy64_png,enemy4_png,enemy63_png,enemy76_png,enemy70_png,enemy62_png,enemy61_png,effect2_png,960_json,enemy1_png,enemy2_png,enemy3_png,enemy31_png,enemy32_png,enemy33_png,enemy34_png,enemy35_png,enemy10_png,enemy13_png,enemy48_png,enemy77_png,400_json,320_json,113_json,113_png,114_json,114_png,115_json,115_png,m_shadow_mc_png,hero_1_png,hero_1_json,hero_2_png,102_1_png,102_2_png,hero_3_json,hero_3_png,103_1_png,103_2_png,hero_4_json,hero_4_png,104_1_png,104_2_png,hero_5_json,hero_5_png,105_1_png,105_2_png,113_1_png,113_2_png,114_1_png,114_2_png,115_1_png,115_2_png,hero_1_1_png,hero_1_2_png,hero_2_json,skill8_png,skill8_json",
 			"name":"monster"
 		},
 		{
@@ -1922,6 +1922,56 @@
 			"name":"hero_2_json",
 			"type":"json",
 			"url":"game_assets2/hero/hero_2.json"
+		},
+		{
+			"name":"buff_atk_dec_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_atk_dec.png"
+		},
+		{
+			"name":"buff_def_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_def.png"
+		},
+		{
+			"name":"buff_def_dec_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_def_dec.png"
+		},
+		{
+			"name":"buff_miss_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_miss.png"
+		},
+		{
+			"name":"buff_speed_dec_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_speed_dec.png"
+		},
+		{
+			"name":"buff_wudi_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_wudi.png"
+		},
+		{
+			"name":"bullet10_png",
+			"type":"image",
+			"url":"game_assets2/ani/bullet10.png"
+		},
+		{
+			"name":"bullet9_png",
+			"type":"image",
+			"url":"game_assets2/ani/bullet9.png"
+		},
+		{
+			"name":"skill8_png",
+			"type":"image",
+			"url":"game_assets2/ani/skill8.png"
+		},
+		{
+			"name":"skill8_json",
+			"type":"json",
+			"url":"game_assets2/ani/skill8.json"
 		}
 	]
 }

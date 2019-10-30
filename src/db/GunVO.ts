@@ -15,40 +15,44 @@ class GunVO {
     public atk: number;
     public atkspeed: number;
     public atkdis: number;
-    public shootnum: number;
-    public skilltype: string;
-    public sv1: number;
-    public sv2: number;
-    public enemy: string;
+
+    public des1: string;
+    public cd: number;
+    public mp: number;
+    public mpcost: number;
+    public v1: number;
+    public v1up: number;
+    public v2: number;
+    public v2up: number;
+
+    public des3: string;
+    public energy: number;
+    public v3: number;
+    public v3up: number;
+    public v4: number;
+    public v4up: number;
 
 
-
-    public enemys
     public constructor() {
 
     }
 
     public reInit(){
-        this.enemys = this.enemy.split(',')
-    }
+        var temp = (this.v1 + '').split('#')
+        this.v1 = parseFloat(temp[0]);
+        this.v1up = parseFloat(temp[1]) || 0;
 
-    private enemyVOs
-    public getEnemys(){
-       if(!this.enemyVOs)
-       {
-           this.enemyVOs = [];
-           for(var i=0;i<this.enemys.length;i++)
-           {
-               this.enemyVOs.push(MonsterVO.getObject(this.enemys[i]))
-           }
-           ArrayUtil_wx4.sortByField(this.enemyVOs,['level','id'],[0,0])
-       }
-        return this.enemyVOs;
-    }
+        temp = (this.v2 + '').split('#')
+        this.v2 = parseFloat(temp[0]);
+        this.v2up = parseFloat(temp[1]) || 0;
 
-    //对这个怪有攻击加成
-    public isAtkAdd(mid){
-       return this.enemys.indexOf(mid+'') != -1
+        temp = (this.v3 + '').split('#')
+        this.v3 = parseFloat(temp[0]);
+        this.v3up = parseFloat(temp[1]) || 0;
+
+        temp = (this.v4 + '').split('#')
+        this.v4 = parseFloat(temp[0]);
+        this.v4up = parseFloat(temp[1]) || 0;
     }
 
     public getThumb(){
@@ -59,25 +63,18 @@ class GunVO {
         return 'knife_'+this.id+'_png'
     }
 
-    public getDes(){
-        switch(this.skilltype)
-        {
-            case 'ice':
-                return '降低目标 ' + MyTool.createHtml('50%',0xFFFF00) + ' 的移动速度，持续 '+ MyTool.createHtml(this.sv1,0xFFFF00) + '秒'
-            case 'fire':
-                return '点燃目标，每秒造成 ' + MyTool.createHtml('50',0xFFFF00) + ' 点伤害，持续 '+ MyTool.createHtml(this.sv1,0xFFFF00) + '秒'
-            case 'poison':
-                return '使目标中毒，每秒造成 ' + MyTool.createHtml('20',0xFFFF00) + ' 点伤害，直至目标死亡'
-            case 'yun':
-                return '有 ' + MyTool.createHtml(this.sv1 + '%',0xFFFF00) + ' 的机率使目标陷入晕眩，持续 '+ MyTool.createHtml(this.sv2,0xFFFF00) + '秒'
-            case 'atk':
-                return '增加' + MyTool.createHtml(this.sv1 + '格',0xFFFF00) + '范围内所有武器 ' + MyTool.createHtml(this.sv2 + '%',0xFFFF00) + ' 的攻击力,可以叠加'
-            case 'speed':
-                return '增加' + MyTool.createHtml(this.sv1 + '格',0xFFFF00) + '范围内所有武器 ' + MyTool.createHtml(this.sv2 + '%',0xFFFF00) + ' 的攻击速度,可以叠加'
-            case 'dis':
-                return '增加' + MyTool.createHtml(this.sv1 + '格',0xFFFF00) + '范围内所有武器 ' + MyTool.createHtml('1格',0xFFFF00) + ' 的攻击距离,不可叠加'
-        }
-        return ''
+    public getDes1(){
+
+    }
+
+    public getDes2(){
+
+    }
+
+    public getSkillValue(index,level=-1){
+        if(level == -1)
+            level = PKManager.getInstance().getHeroLevel(this.id);
+        return this['v' + index] + this['v' + index + 'up']*level;
     }
 
 

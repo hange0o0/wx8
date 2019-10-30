@@ -30,6 +30,9 @@ class TowerItem extends game.BaseItem{
     private disBottomMVMC: eui.Image;
     private energyBar: HPBar;
     private mpBar: HPBar;
+    private list: eui.List;
+
+
 
 
     public monsterMV:HeroMVItem = new HeroMVItem();
@@ -59,6 +62,8 @@ class TowerItem extends game.BaseItem{
     public childrenCreated() {
         super.childrenCreated();
 
+        this.list.itemRenderer = BuffListItem;
+
         this.anchorOffsetX = 32
         this.anchorOffsetY = 32
 
@@ -80,6 +85,23 @@ class TowerItem extends game.BaseItem{
         this.monsterMV.y = 32;
     }
 
+    public renewBuff(){
+        var arr = [];
+        var obj = {};
+        var buffList = this.heroData.buff;
+        for(var i=0;i<buffList.length;i++)
+        {
+            var buff = buffList[i];
+            obj[buff.key] = true;
+        }
+        for(var s in obj)
+        {
+            arr.push(s);
+        }
+        this.list.dataProvider = new eui.ArrayCollection(arr)
+    }
+
+
     public dataChanged():void {
         if(!this.mv)
             return;
@@ -98,6 +120,7 @@ class TowerItem extends game.BaseItem{
             this.energyBar.visible = true
             this.mpBar.visible = true
             this.renewInfo();
+            this.renewBuff();
         }
         else
         {
@@ -105,6 +128,7 @@ class TowerItem extends game.BaseItem{
             this.mpBar.visible = false
             this.monsterMV.visible = false;
             this.monsterMV.stop();
+            this.list.dataProvider = new eui.ArrayCollection([])
         }
 
         if(this.stateFireMV) {
@@ -120,6 +144,32 @@ class TowerItem extends game.BaseItem{
     private renewInfo(){
         this.energyBar.data = {hp:this.data.energy,maxHp:this.data.maxEnergy};
         this.mpBar.data = {hp:this.data.mp,maxHp:this.data.maxMp};
+
+        //显示满MP
+        if(this.heroData.isEnergyFull())
+        {
+            if(!this.stateFireMV)
+            {
+                this.stateFireMV = new MovieSimpleSpirMC2()
+                this.stateFireMV.anchorOffsetX = 531/3/2
+                this.stateFireMV.anchorOffsetY = 532/2*0.8
+                this.stateFireMV.x = 32
+                this.stateFireMV.y = 32
+                this.stateFireMV.setData('effect18_png',531/3,532/2,5,84)
+                this.stateFireMV.widthNum = 3
+                this.stateFireMV.stop()
+            }
+
+            if(!this.stateFireMV.stage)
+            {
+                this.addChildAt(this.stateFireMV,0)
+                this.stateFireMV.play()
+            }
+        }
+        else if(this.stateFireMV && this.stateFireMV.stage) {
+            this.stateFireMV.stop()
+            MyTool.removeMC(this.stateFireMV)
+        }
     }
 
     public getDis(m2)
@@ -226,6 +276,10 @@ class TowerItem extends game.BaseItem{
                     this.onSkillAction()
                 else if(this.hurtType == 'atk')
                     this.onAtkAction();
+                else if(this.hurtType == 'energy')
+                    this.onEnergyAction();
+                //else if(this.hurtType == 'bullet')
+                //    this.onEnergyAction();
             }
         }
 
@@ -239,11 +293,8 @@ class TowerItem extends game.BaseItem{
         //判断能不能技能
         if(this.heroData.canSkill())
         {
-            this.heroData.useSkill();
-            this.monsterMV.atk();
-            this.hurtStep = 15;
-            this.hurtType = 'skill'
-            this.heroData.stopStep = 30;
+            this.heroData.lastSkillTime = TC.actionStep;
+            this.atkMV('skill')
             return;
         }
 
@@ -273,17 +324,22 @@ class TowerItem extends game.BaseItem{
 
         ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
 
+        if(this.heroData.bulletNum && atkList.length)
+        {
+            this.heroData.lastAtkTime = TC.actionStep
+            this.atkMV('bullet');
+            this.bulletAtk(atkList);
+            return;
+        }
+
         var enemy = atkList[0];
         this.enemy = enemy;
         if(enemy)
         {
             //PKTowerUI.getInstance().createBullet(this,atkList[i])
             this.heroData.lastAtkTime = TC.actionStep
+            this.atkMV('atk')
 
-            this.monsterMV.atk();
-            this.hurtStep = 15;
-            this.hurtType = 'atk'
-            this.heroData.stopStep = 30;
             SoundManager.getInstance().playEffect('arc')
 
             var addX = Math.floor(enemy.x - this.x)
@@ -294,16 +350,66 @@ class TowerItem extends game.BaseItem{
         }
     }
 
+    public atkMV(type,loop?){
+        var atkSpeed = this.heroData.atkSpeed
+        if(atkSpeed < 1)
+            atkSpeed = 1
+        this.monsterMV.atk(loop);
+        this.hurtStep = atkSpeed/2;
+        this.hurtType = type
+        this.heroData.stopStep = atkSpeed;
+    }
+
+    public standMV(){
+        if(this.monsterMV.state != MonsterMV.STAT_STAND)
+            this.monsterMV.stand();
+    }
+
     public onAtkAction(){
         this.heroData.addEnergy(1);
         if(this.enemy)
             this.heroData.atkAction(this.enemy);
     }
+
     public onSkillAction(){
-        this.heroData.skillAction();
+        if(this.heroData.skillAction())
+        {
+            this.heroData.addMp(-this.heroData.skillCost)
+        }
+        else
+        {
+            this.heroData.lastSkillTime = -9999;
+        }
+    }
+
+    public onEnergyAction(){
+        if(this.heroData.energySkillAction())
+        {
+            this.heroData.addEnergy(-this.heroData.energy)
+        }
+    }
+
+    public useEnergyMV(loop?){
+        this.atkMV('energy',loop)
     }
 
     private runBuff(){
 
+    }
+
+    public bulletAtk(atkList){
+        var b = false
+        var shootNum = this.heroData.bulletNum;
+        for(var i=0;i<shootNum;i++)
+        {
+            if(atkList[i])
+            {
+                PKTowerUI.getInstance().createBullet(this.heroData,atkList[i])
+                b = true;
+            }
+        }
+
+        if(b)
+            this.heroData.addEnergy(1);
     }
 }

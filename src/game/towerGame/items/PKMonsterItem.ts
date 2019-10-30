@@ -20,6 +20,8 @@ class PKMonsterItem extends game.BaseItem {
      }
 
     private hpBar: HPBar;
+    private list: eui.List;
+
 
     public path
     public targetPos
@@ -36,6 +38,8 @@ class PKMonsterItem extends game.BaseItem {
     public poisonHurt = 0;
     public speedRate = 0;
     public lastHurtTime = 0;
+
+    public buff = [];
 
     public stateYunMV
     public stateFireMV
@@ -65,6 +69,8 @@ class PKMonsterItem extends game.BaseItem {
         this.touchChildren = this.touchEnabled = false;
         this.hpBar.currentState = 's2';
 
+        this.list.itemRenderer = BuffListItem;
+
         this.addChildAt(this.monsterMV,0)
         this.monsterMV.x = 50;
         this.monsterMV.y = 300;
@@ -89,8 +95,24 @@ class PKMonsterItem extends game.BaseItem {
     }
     public resetHpBarY(){
         this.hpBar.y = 300 - this.mvo.height*this.scale - 20
+        this.list.y = this.hpBar.y - 30
         this.monsterMV.scaleX = this.monsterMV.scaleY = this.scale
 
+    }
+
+    public renewBuff(){
+        var arr = [];
+        var obj = {};
+        for(var i=0;i<this.buff.length;i++)
+        {
+            var buff = this.buff[i];
+            obj[buff.key] = true;
+        }
+        for(var s in obj)
+        {
+            arr.push(s);
+        }
+        this.list.dataProvider = new eui.ArrayCollection(arr)
     }
 
     public dataChanged(){
@@ -109,6 +131,8 @@ class PKMonsterItem extends game.BaseItem {
         this.poisonHurt = 0;
         this.lastHurtTime = 0;
         this.targetPos = null;
+        this.buff.length = 0;
+        this.renewBuff();
         
         this.isDie = 0
         this.speed = this.mvo.speed/10
@@ -181,7 +205,7 @@ class PKMonsterItem extends game.BaseItem {
                 this.stateYunMV.stop()
             }
             this.addChild(this.stateYunMV)
-            this.stateYunMV.y = 300 - this.mvo.height - 35;
+            this.stateYunMV.y = 300 - this.mvo.height - 40;
             this.stateYunMV.play()
             this.standMV()
         }
@@ -345,6 +369,19 @@ class PKMonsterItem extends game.BaseItem {
             if(hurt)
                 this.addHp(-hurt)
         }
+
+        for(var i=0;i<this.buff.length;i++)
+        {
+            var buff = this.buff[i];
+            buff.step--;
+            buff.stepFun && buff.stepFun(buff)
+            if(buff.step <= 0)
+            {
+                buff.endFun && buff.endFun(buff);
+                this.buff.splice(i,1);
+                i--;
+            }
+        }
     }
 
     public addHp(v){
@@ -370,6 +407,10 @@ class PKMonsterItem extends game.BaseItem {
     public standMV(){
         if(this.monsterMV.state != MonsterMV.STAT_STAND)
             this.monsterMV.stand();
+    }
+    public flyMV(){
+        egret.Tween.removeTweens(this)
+        egret.Tween.get(this).to({y:this.y-50},150).to({y:this.y},150)
     }
 
     public dieMV(){
@@ -407,6 +448,46 @@ class PKMonsterItem extends game.BaseItem {
             x:this.x,
             y:this.y - this.mvo.height*0.4*this.scale
         }
+    }
+
+    public addBuff(data){
+        data.target = this
+        if(data.id)
+        {
+            var b = false;
+            for(var i=0;i<this.buff.length;i++)
+            {
+                var buff = this.buff[i];
+                if(buff.id == data.id)
+                {
+                    b = true;
+                    buff.endFun && buff.endFun(buff);
+                    this.buff.splice(i,1);
+                    i--;
+                }
+            }
+        }
+
+        this.buff.push(data);
+        this.renewBuff();
+    }
+
+    public getBuffByID(id){
+        for(var i=0;i<this.buff.length;i++)
+        {
+            var buff = this.buff[i];
+            if(buff.id == id)
+            {
+                return buff;
+            }
+        }
+        return null;
+    }
+
+    public removeBuff(buff){
+        var index = this.buff.indexOf(buff);
+        if(index != -1)
+            this.buff.splice(index,1)
     }
 
 

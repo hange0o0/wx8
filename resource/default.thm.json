@@ -60,6 +60,7 @@
 		"resource/skin/game/towerGame/ChangeGunItemSkin.exml",
 		"resource/skin/game/towerGame/ChangeGunUISkin.exml",
 		"resource/skin/game/towerGame/DrawMapUISkin.exml",
+		"resource/skin/game/towerGame/items/BuffListItemSkin.exml",
 		"resource/skin/game/towerGame/items/DragHeroItemSkin.exml",
 		"resource/skin/game/towerGame/items/PKBulletItemSkin.exml",
 		"resource/skin/game/towerGame/items/PKMonsterItemSkin.exml",

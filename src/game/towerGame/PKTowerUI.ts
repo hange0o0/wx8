@@ -42,6 +42,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
     public monsterArr = []
     public bulletArr = []
+    public heroCopyArr = []
 
     public touchPos
 
@@ -50,6 +51,8 @@ class PKTowerUI extends game.BaseUI_wx4 {
     public heroList = [];
     public page = 1;
     public maxPage = 1;
+
+    public selectItem;
     public constructor() {
         super();
         this.skinName = "PKTowerUISkin";
@@ -89,20 +92,29 @@ class PKTowerUI extends game.BaseUI_wx4 {
         GameManager_wx4.stage.addEventListener(egret.TouchEvent.TOUCH_END,this.onTouchEnd,this)
     }
 
+    //判断是不是有效的塔位，返回对应的塔位座标
+    private isTowerPos(x,y){
+        if(this.mapData[y] && this.mapData[y][x] == 2)
+            return {x:x,y:y}
+        if(this.mapData[y+1] && this.mapData[y+1][x] == 2)
+            return {x:x,y:y+1}
+        return null;
+    }
+
     private onTouchBegin(e){
         var itemSize = 64*this.scale;
         var x = Math.floor((e.stageX - this.pkMap.x)/itemSize)
         var y = Math.floor((e.stageY - this.y - this.pkMap.y)/itemSize)
-        if(y >= this.hh || y < 0 || x >= this.ww || x < 0)
+        if(y >= this.hh || y < -1 || x >= this.ww || x < 0)
             return;
 
-        if(this.mapData[y][x] == 2)
+        var towerPos = this.isTowerPos(x,y)
+        if(towerPos)
         {
             this.touchPos = {
-                x:x,
-                y:y,
-                id:this.mapData[y][x],
-                towerID:this.towerPos[x+'_' + y]
+                x:towerPos.x,
+                y:towerPos.y,
+                towerID:this.towerPos[towerPos.x+'_' + towerPos.y]
             }
         }
 
@@ -124,10 +136,10 @@ class PKTowerUI extends game.BaseUI_wx4 {
         var itemSize = 64*this.scale;
         var x = Math.floor((e.stageX - this.pkMap.x)/itemSize)
         var y = Math.floor((e.stageY - this.y - this.pkMap.y)/itemSize)
-        if(y >= this.hh || y < 0 || x >= this.ww || x < 0)
+        if(y >= this.hh || y < -1 || x >= this.ww || x < 0)
             return;
 
-        if(this.touchPos && this.touchPos.id == 2 && this.touchPos.towerID && !this.dragHero.stage && !(this.touchPos.x == x && this.touchPos.y == y))
+        if(this.touchPos && this.touchPos.towerID && !this.dragHero.stage)// && !(this.touchPos.x == x && this.touchPos.y == y)
         {
             this.addChild(this.dragHero);
             this.dragHero.data = this.touchPos.towerID
@@ -150,6 +162,10 @@ class PKTowerUI extends game.BaseUI_wx4 {
         this.dragHero.data = target.id
         this.dragHero.x = data.x
         this.dragHero.y = data.y - this.y;
+
+
+        this.selectItem = null;
+        this.setSelect(HeroData.getHero(target.id))
     }
 
     private onDragMove(e){
@@ -163,16 +179,17 @@ class PKTowerUI extends game.BaseUI_wx4 {
         var itemSize = 64*this.scale;
         var x = Math.floor((data.x - this.pkMap.x)/itemSize)
         var y = Math.floor((data.y - this.y - this.pkMap.y)/itemSize)
-        if(y >= this.hh || y < 0 || x >= this.ww || x < 0)
+        if(y >= this.hh || y < -1 || x >= this.ww || x < 0)
         {
             this.setDragOK(false)
             return;
         }
 
-        if(this.mapData[y][x] == 2)
+        var towerPos = this.isTowerPos(x,y)
+        if(towerPos)
         {
-            var tower = this.pkMap.getTowerByPos(x,y)
-            if(!tower || tower.id != this.dragHero.data)
+            var tower = this.pkMap.getTowerByPos(towerPos.x,towerPos.y)
+            if(!tower || !tower.data || tower.data.id != this.dragHero.data)
             {
                 this.setDragOK(true,tower)
             }
@@ -252,6 +269,14 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
     }
 
+    public setSelect(data){
+        if(this.selectItem == data)
+            this.selectItem = null;
+        else
+            this.selectItem = data;
+        MyTool.runListFun(this.list,'renewSelect')
+    }
+
     private onTowerChange(){
         var PKM = PKManager.getInstance();
         //重置玩家数据
@@ -262,7 +287,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
         //更新列表显示
         var lastPage = this.page
-        this.initHero();
+        this.initHeroList();
         if(lastPage > this.maxPage)
             lastPage = this.maxPage
         this.page = lastPage
@@ -361,6 +386,10 @@ class PKTowerUI extends game.BaseUI_wx4 {
         {
             PKBulletItem.freeItem(this.bulletArr.pop())
         }
+        while(this.heroCopyArr.length)
+        {
+            HeroItem.freeItem(this.heroCopyArr.pop())
+        }
 
         this.levetText.text = '第 '+this.data.id+' 关'
         this.chooseSkill = null;
@@ -373,7 +402,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
         TC.initData(this.data);
         this.renewMap();
-        this.initHero();
+        this.initHeroList();
         this.renewHero();
 
 
@@ -386,21 +415,19 @@ class PKTowerUI extends game.BaseUI_wx4 {
         //}
     }
 
-    public initHero(){
+    public initHeroList(){
         var PKM = PKManager.getInstance();
 
         this.heroList.length = 0;
-        for(var i=0;i<PKM.myHero.length;i++)
+        for(var s in PKM.heros)
         {
-            var id = PKM.myHero[i];
+            var id = parseInt(s);
             var heroPos = PKM.getHeroPos(id)
-            if(heroPos)
+            if(!heroPos)
             {
-
-            }
-            else
-            {
-                this.heroList.push(HeroData.getHero(id));
+                var hData = HeroData.getHero(id);
+                this.heroList.push(hData);
+                hData.relateTower = null;
             }
         }
 
@@ -477,7 +504,10 @@ class PKTowerUI extends game.BaseUI_wx4 {
         TC.onStep();
         for(var s in HeroData.hDatas)
         {
-            HeroData.hDatas[s].autoAddMp();
+            var heroData = HeroData.hDatas[s];
+            heroData.autoAddMp();
+            heroData.buffRun();
+            heroData.onStep();
         }
 
 
@@ -511,6 +541,21 @@ class PKTowerUI extends game.BaseUI_wx4 {
             bItem.onE();
         }
 
+        var len = this.heroCopyArr.length;
+        for(var i=0;i<len;i++)
+        {
+            var hItem = this.heroCopyArr[i];
+            if(hItem.isDie)
+            {
+                HeroItem.freeItem(hItem);
+                this.heroCopyArr.splice(i,1)
+                len--;
+                i--;
+                continue;
+            }
+            hItem.onE();
+        }
+
         var gunArr = this.pkMap.gunArr;
         len = gunArr.length;
         for(var i=0;i<len;i++)
@@ -537,6 +582,15 @@ class PKTowerUI extends game.BaseUI_wx4 {
         newItem.resetXY(startPos.x,startPos.y)
     }
 
+    public addHero(data){
+        var newItem = HeroItem.createItem();
+        this.heroCopyArr.push(newItem);
+        this.pkMap.roleCon.addChild(newItem);
+        newItem.data = data;
+        newItem.x = data.x
+        newItem.y = data.y
+    }
+
     public createBullet(owner,target){
         var bullet = PKBulletItem.createItem();
         this.bulletArr.push(bullet);
@@ -547,5 +601,9 @@ class PKTowerUI extends game.BaseUI_wx4 {
         }
         bullet.resetXY(owner.x,owner.y - 50)
         return bullet;
+    }
+
+    public addToRoleCon(mc){
+        this.pkMap.roleCon.addChild(mc);
     }
 }

@@ -3,5 +3,5 @@
 	<e:Image id="selectMC" source="common_select_01_png" left="-5" right="-5" top="0" bottom="0" scale9Grid="19,17,25,24"/>
 	<ns1:HPBar id="energyBar" skinName="HPBarSkin" horizontalCenter="0" currentState="s3" bottom="25"/>
 	<ns1:HPBar id="mpBar" skinName="HPBarSkin" currentState="s4" horizontalCenter="0" bottom="10"/>
-	<e:Button id="infoBtn" label="详情" bottom="10" skinName="Btn2Skin" scaleX="0.75" scaleY="0.75" height="50" width="120" horizontalCenter="0"/>
+	<e:Button id="infoBtn" label="详情" bottom="0" skinName="Btn2Skin" scaleX="0.75" scaleY="0.75" height="50" width="120" horizontalCenter="0"/>
 </e:Skin>

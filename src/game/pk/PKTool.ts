@@ -1,6 +1,8 @@
 class PKTool {
-      public static getStepByTime(t){
-        return Math.round(t*30/1000)
+    public static getStepByTime(t,needRound=true){
+        if(needRound)
+            return Math.round(t*30/1000)
+        return (t*30/1000)
     }
 
     /*

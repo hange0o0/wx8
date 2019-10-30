@@ -51,6 +51,8 @@ class HeroMVItem extends game.BaseItem {
     }
 
     public load(heroid): void {
+        if(_get['hero'])
+            heroid = 1;
         this.mc.visible = true;
         this.mc.alpha = 1;
         this.state = 'stand'
@@ -106,9 +108,9 @@ class HeroMVItem extends game.BaseItem {
         this.reset();
     }
 
-    public atk(){
+    public atk(loop?){
         this.state = MonsterMV.STAT_ATK
-        this.reset();
+        this.reset(loop);
     }
 
     private reset(round?){
@@ -130,7 +132,7 @@ class HeroMVItem extends game.BaseItem {
                 var mcData = this.mcFactory.generateMovieClipData('atk');
                 if(mcData && mcData.frames.length > 0){
                     this.mc.movieClipData = mcData;
-                    this.mc.gotoAndPlay(1, round)
+                    this.mc.gotoAndPlay(1, round || 1)
                     this.mc.once(egret.Event.COMPLETE, this.stand, this);
                 }
                 break;
