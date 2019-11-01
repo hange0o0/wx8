@@ -21,6 +21,11 @@ class HeroData{
     public atkSpeedBase;
     public atkDisBase;
 
+    //暴击相关
+    public doubleRate=0
+    public doubleValue=0
+
+
     public skillCD = 30*5
     public lastSkillTime
     public skillCost = 30
@@ -34,6 +39,8 @@ class HeroData{
     public buff = []
 
     public bulletNum = 0
+
+    public currentAtkRate = 1;//这次攻击是否是暴击
 
     public reset(){
         var PKM = PKManager.getInstance();
@@ -55,6 +62,10 @@ class HeroData{
         this.mp = this.maxMp = vo.mp;
         this.skillCD = PKTool.getStepByTime(vo.cd*1000,false)
         this.skillCost = vo.mpcost
+    }
+
+    public getHurt(){
+        return this.atk*this.currentAtkRate
     }
 
     public getBuffByID(id){
@@ -93,7 +104,7 @@ class HeroData{
             }
         }
         this.buff.push(data);
-        this.relateTower && this.relateTower.renewBuff()
+        this.relateTower && (this.relateTower.buffChange = true)
     }
 
     public buffRun(){
@@ -111,7 +122,7 @@ class HeroData{
                 i--;
             }
         }
-        b && this.relateTower && this.relateTower.renewBuff();
+        b && this.relateTower && (this.relateTower.buffChange = true)
     }
 
     public isEnergyFull(){
@@ -132,6 +143,14 @@ class HeroData{
         this.relateTower.useEnergyMV(this.loopEnergy);
         //this.addEnergy(-this.energy);
         //this.energySkillAction();
+    }
+
+    public resetAtkRate(){
+        this.currentAtkRate = 1;
+        if(Math.random() < this.doubleRate)
+        {
+            this.currentAtkRate += this.doubleValue;
+        }
     }
 
     public addEnergy(v){
@@ -168,21 +187,21 @@ class HeroData{
 
 
     public skillAction(){
-        if(!this.relateTower)
-            return;
-
-        var atkList = this.getNearEnemys()
-        ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
-
-        var enemy = atkList[0];
-        if(enemy)
-        {
-            enemy.addHp(-this.atk*2);
-        }
+        //if(!this.relateTower)
+        //    return;
+        //
+        //var atkList = this.getNearEnemys()
+        //ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
+        //
+        //var enemy = atkList[0];
+        //if(enemy)
+        //{
+        //    enemy.addHp(-this.atk*2);
+        //}
     }
 
-    public atkAction(enemy){
-        enemy.addHp(-this.atk)
+    public atkAction(enemy,addHp=0){
+        enemy.addHp(-this.getHurt() + addHp,1)
     }
 
 
@@ -208,17 +227,17 @@ class HeroData{
 
 
     public energySkillAction(){
-        if(!this.relateTower)
-            return;
-
-        var atkList = this.getNearEnemys()
-        ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
-
-        var enemy = atkList[0];
-        if(enemy)
-        {
-            enemy.addHp(-this.atk*10);
-        }
+        //if(!this.relateTower)
+        //    return;
+        //
+        //var atkList = this.getNearEnemys()
+        //ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
+        //
+        //var enemy = atkList[0];
+        //if(enemy)
+        //{
+        //    enemy.addHp(-this.atk*10);
+        //}
     }
 
     public onStep(){

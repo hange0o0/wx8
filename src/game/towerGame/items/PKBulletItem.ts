@@ -26,6 +26,14 @@ class PKBulletItem extends game.BaseItem {
     public isDie = 0;
     public waitStep = 0;
 
+    public hurt = 0
+    public type = 'bullet'
+    public atkR = 0
+    public rota = 0
+    public endTime = 0
+    public lastHurt = {}
+
+
     public targetDiePos;
     public constructor() {
         super();
@@ -38,7 +46,7 @@ class PKBulletItem extends game.BaseItem {
         this.anchorOffsetY = 25
 
         //this.mc.scaleX = this.mc.scaleY = 0.6
-        this.mc.rotation = 90
+        //this.mc.rotation = 90
     }
 
     public dataChanged(){
@@ -46,12 +54,37 @@ class PKBulletItem extends game.BaseItem {
         this.target = this.data.target;
         this.waitStep = this.owner.atkSpeed/2
 
+        this.type = 'bullet'
         this.mc.source = 'bullet9_png';
+        this.hurt = this.owner.getHurt()
 
         this.isDie = 0
         this.targetDiePos = null
 
         this.scaleX = this.scaleY = 0;
+        this.lastHurt = {};
+
+        var sp = this.data.sp;
+        if(sp)
+        {
+            if(sp.img)this.mc.source = sp.img;
+            if(sp.type)this.type = sp.type;
+            if(sp.atkR)this.atkR = sp.atkR;
+            if('rota' in sp)this.rota = sp.rota;
+            if(sp.speed)this.speed = sp.speed;
+            if(sp.hurt)this.hurt = sp.hurt;
+            if(sp.endTime)this.endTime = sp.endTime;
+            this.scaleX = this.scaleY = 1;
+            this.waitStep = 0
+            this.rotation = this.rota/Math.PI*180
+            //type:'move_hit',
+            //atkR:60,
+            //rota:rota,
+            //speed:5,
+            //hurt:this.getHurt(),
+            //endTime:TC.actionStep + 20,
+            //img:'skill22_png'
+        }
     }
 
     public resetXY(x,y){
@@ -73,33 +106,62 @@ class PKBulletItem extends game.BaseItem {
         }
 
 
-        if(this.target.isDie && !this.targetDiePos)
+
+
+        if(this.type == 'bullet')
         {
-            this.targetDiePos = this.target.getHitPos();
+            if(this.target.isDie && !this.targetDiePos)
+            {
+                this.targetDiePos = this.target.getHitPos();
+            }
+            var targetXY = this.targetDiePos || this.target.getHitPos()
+            var rota = Math.atan2(targetXY.y-this.y,targetXY.x-this.x)
+
+            this.rotation = rota/Math.PI*180
+            var addX = this.speed*Math.cos(rota)
+            var addY = this.speed*Math.sin(rota)
+            this.resetXY(this.x + addX,this.y+addY)
+
+            if(MyTool.getDis(this,targetXY) <= this.speed)
+            {
+                this.isDie = 1;
+                this.onAtk();
+            }
+        }
+        else
+        {
+            var addX = this.speed*Math.cos(this.rota)
+            var addY = this.speed*Math.sin(this.rota)
+            this.resetXY(this.x + addX,this.y+addY)
+            var mArr = PKTowerUI.getInstance().monsterArr;
+            var len = mArr.length
+            for(var i=0;i<len;i++)
+            {
+                var mItem = mArr[i];
+                if(mItem.isDie)
+                    continue;
+                if(this.lastHurt[mItem.id])
+                    continue;
+                if(MyTool.getDis(mItem,this) < this.atkR)
+                {
+                    this.lastHurt[mItem.id] = TC.actionStep;
+                    mItem.addHp(-this.hurt,2);
+                }
+            }
+
+            if(this.endTime && TC.actionStep > this.endTime)
+            {
+                this.isDie = 1;
+            }
         }
 
-        var targetXY = this.targetDiePos || this.target.getHitPos()
-
-
-        var rota = Math.atan2(targetXY.y-this.y,targetXY.x-this.x)
-        this.rotation = rota/Math.PI*180
-
-        var addX = this.speed*Math.cos(rota)
-        var addY = this.speed*Math.sin(rota)
-        this.resetXY(this.x + addX,this.y+addY)
-
-        if(MyTool.getDis(this,targetXY) <= this.speed)
-        {
-            this.isDie = 1;
-            this.onAtk();
-        }
     }
 
     public onAtk(){
         if(this.targetDiePos)
             return;
-        var hurt = -this.owner.atk;
-        this.target.addHp(hurt);
+        var hurt = -this.hurt;
+        this.target.addHp(hurt,1);
     }
 
     public remove(){

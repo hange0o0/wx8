@@ -7,6 +7,15 @@ class H6 extends HeroData{
     public step = 0
     public loopEnergy = 10000;
 
+    public reset(){
+        super.reset();
+        if(this.mv)
+        {
+            AniManager_wx3.getInstance().removeMV(this.mv)
+            this.mv = null;
+        }
+    }
+
     public canUseEnergySkill(){
         if(this.getNearEnemys(true).length == 0)
             return false;
@@ -57,7 +66,7 @@ class H6 extends HeroData{
         }
 
         var hurt = this.vo.getSkillValue(3)/2
-        var decRate = this.vo.getSkillValue(4)/100;
+        var decRate = 0.5;
 
         var monsterArr = PKTowerUI.getInstance().monsterArr;
         var len = monsterArr.length;
@@ -71,9 +80,10 @@ class H6 extends HeroData{
                 continue
             if(MyTool.getDis(mItem,this.mv) > atkDis)
                 continue
-            if(mItem.getBuffByID(6))
+            var buff = mItem.getBuffByID(6)
+            if(buff && buff.step > 1)
                 continue;
-            mItem.addHp(-hurt)
+            mItem.addHp(-hurt,2)
             if(mItem.isDie)
                 continue;
 

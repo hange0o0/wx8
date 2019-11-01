@@ -19,7 +19,7 @@ class H5 extends HeroData{
         var atkList = this.getNearEnemys();
         if(atkList.length == 0)
             return false;
-        var hurt = this.vo.getSkillValue(1)
+        var hurt = this.vo.getSkillValue(1)*this.currentAtkRate
         var decRate = this.vo.getSkillValue(2)/100;
         var cd = PKTool.getStepByTime(3000);
 
@@ -27,7 +27,7 @@ class H5 extends HeroData{
         for(var i=0;i<atkList.length;i++)
         {
             var item = atkList[i];
-            item.addHp(-hurt)
+            item.addHp(-hurt,2)
 
             var addSpeed = item.speed*decRate
             item.speed -= addSpeed;
@@ -50,14 +50,14 @@ class H5 extends HeroData{
         var atkList = this.getNearEnemys();
         if(atkList.length == 0)
             return false;
-        var hurt = this.vo.getSkillValue(3)
+        var hurt = this.vo.getSkillValue(3)*this.currentAtkRate
         var cd = PKTool.getStepByTime(this.vo.getSkillValue(4)*1000);
 
 
         for(var i=0;i<atkList.length;i++)
         {
             var item = atkList[i];
-            item.addHp(-hurt)
+            item.addHp(-hurt,2)
             item.setYun(cd)
         }
         return true;

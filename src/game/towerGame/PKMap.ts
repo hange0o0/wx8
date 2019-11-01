@@ -31,6 +31,8 @@ class PKMap extends game.BaseContainer_wx4 {
     public data
 
     public wudiArr = []
+
+    public roadPos = []
     public constructor() {
         super();
         this.skinName = "PKMapSkin";
@@ -57,7 +59,28 @@ class PKMap extends game.BaseContainer_wx4 {
             this.renewPos(data);
         else
             this.renewPos2(data);
+
+
+        this.roadPos.length = 0;
+        for(var i=0;i<data.length;i++)
+        {
+            for(var j=0;j<data[i].length;j++)
+            {
+                var type = data[i][j]
+                if(type == 1)
+                {
+                    this.roadPos.push(
+                        {
+                            x:j,
+                            y:i
+                        }
+                    )
+                }
+
+            }
+        }
     }
+
 
 
     public showWUDI(){

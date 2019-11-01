@@ -14,7 +14,7 @@ class H2 extends HeroData{
             return false;
         var monsterArr = PKTowerUI.getInstance().monsterArr;
         var len = monsterArr.length;
-        var value = this.vo.getSkillValue(3);
+        var value = this.vo.getSkillValue(3)*this.currentAtkRate;
         for(var i=0;i<len;i++)
         {
             var mItem:PKMonsterItem = monsterArr[i]
@@ -22,7 +22,7 @@ class H2 extends HeroData{
                 continue
             if(!mItem.poisonStep)
                 continue
-            mItem.addHp(-value)
+            mItem.addHp(-value,2)
         }
         return true;
     }

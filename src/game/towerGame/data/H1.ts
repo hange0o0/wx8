@@ -15,7 +15,7 @@ class H1 extends HeroData{
         {
             PKTowerUI.getInstance().addHero({
                 id:1,
-                atk:this.atk*this.vo.getSkillValue(1)/100,
+                atk:this.getHurt()*this.vo.getSkillValue(1)/100,
                 aliveTime:this.vo.getSkillValue(2)*TC.frameRate,
                 atkSpeed:this.atkSpeedBase,
                 atkDis:this.atkDisBase,
@@ -54,7 +54,7 @@ class H1 extends HeroData{
             var enemy:PKMonsterItem = atkList[i]
             PKTowerUI.getInstance().addHero({
                 id:1,
-                atk:this.atk*this.vo.getSkillValue(1)/100,
+                atk:this.getHurt()*this.vo.getSkillValue(1)/100,
                 aliveTime:this.vo.getSkillValue(2)*TC.frameRate,
                 atkSpeed:this.atkSpeedBase,
                 atkDis:this.atkDisBase,

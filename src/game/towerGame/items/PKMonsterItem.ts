@@ -23,6 +23,9 @@ class PKMonsterItem extends game.BaseItem {
     private list: eui.List;
 
 
+    private dataProvider:eui.ArrayCollection
+    public buffChange = false
+
     public path
     public targetPos
     public scale = 1
@@ -30,14 +33,16 @@ class PKMonsterItem extends game.BaseItem {
 
 
     public id = 0;
+    public stopSkillStep = 0;
     public yunStep = 0;
     public iceStep = 0;
-    public fireStep = 0;
+    public fireStep = 0;//缠绕
     public poisonStep = 0;
     public fireHurt = 0;
     public poisonHurt = 0;
     public speedRate = 0;
     public lastHurtTime = 0;
+    public isSkilling = 0;
 
     public buff = [];
 
@@ -55,6 +60,8 @@ class PKMonsterItem extends game.BaseItem {
     public mvo:MonsterVO
     public hp
     public maxHp
+    public def = 0
+    public mDef = 0
     public isDie
 
     public constructor() {
@@ -70,6 +77,7 @@ class PKMonsterItem extends game.BaseItem {
         this.hpBar.currentState = 's2';
 
         this.list.itemRenderer = BuffListItem;
+        this.dataProvider = this.list.dataProvider = new eui.ArrayCollection([])
 
         this.addChildAt(this.monsterMV,0)
         this.monsterMV.x = 50;
@@ -112,7 +120,9 @@ class PKMonsterItem extends game.BaseItem {
         {
             arr.push(s);
         }
-        this.list.dataProvider = new eui.ArrayCollection(arr)
+        this.dataProvider.source = arr;
+        this.dataProvider.refresh();
+        this.buffChange = false
     }
 
     public dataChanged(){
@@ -126,12 +136,16 @@ class PKMonsterItem extends game.BaseItem {
         this.iceStep = 0;
         this.yunStep = 0;
         this.fireStep = 0;
+        this.stopSkillStep = 0;
         this.poisonStep = 0;
         this.fireHurt = 0;
         this.poisonHurt = 0;
         this.lastHurtTime = 0;
+        this.isSkilling = 0;
         this.targetPos = null;
         this.buff.length = 0;
+        this.def = 0;
+        this.mDef = 0;
         this.renewBuff();
         
         this.isDie = 0
@@ -210,7 +224,9 @@ class PKMonsterItem extends game.BaseItem {
             this.standMV()
         }
         this.yunStep = Math.max(step,this.yunStep);
+        this.stopCurrentSkill();
     }
+
 
     public setFire(step,hurt){
         if(!step)
@@ -231,6 +247,7 @@ class PKMonsterItem extends game.BaseItem {
             this.addChild(this.stateFireMV)
             this.stateFireMV.play()
             this.stateFireMV.scaleX = this.stateFireMV.scaleY = this.mvo.height/140*this.scale
+            this.standMV();
         }
         this.fireStep = Math.max(step,this.fireStep);
         this.fireHurt = Math.max(hurt,this.fireHurt);
@@ -261,6 +278,18 @@ class PKMonsterItem extends game.BaseItem {
         this.poisonHurt = Math.max(hurt,this.poisonHurt);
     }
 
+    public stopCurrentSkill(){
+        if(this.isSkilling)
+        {
+
+        }
+    }
+
+    public onStepRenew(){
+        if(this.buffChange)
+            this.renewBuff()
+    }
+
     public onE(){
         if(this.isDie)
             return;
@@ -268,6 +297,11 @@ class PKMonsterItem extends game.BaseItem {
         if(this.isDie)//buff会至死
             return;
         if(this.yunStep)
+            return;
+
+
+
+        if(this.fireStep)
             return;
 
         //move
@@ -367,9 +401,10 @@ class PKMonsterItem extends game.BaseItem {
             this.lastHurtTime = TC.actionStep;
             var hurt = this.fireHurt + this.poisonHurt;
             if(hurt)
-                this.addHp(-hurt)
+                this.addHp(-hurt,2)
         }
 
+        var b = false;
         for(var i=0;i<this.buff.length;i++)
         {
             var buff = this.buff[i];
@@ -380,13 +415,30 @@ class PKMonsterItem extends game.BaseItem {
                 buff.endFun && buff.endFun(buff);
                 this.buff.splice(i,1);
                 i--;
+                b = true;
             }
         }
+        if(b)
+            this.buffChange = true
     }
 
-    public addHp(v){
+    //hurtType:0无加成，1要考虑物防，2要考虑魔防
+    public addHp(v,hurtType=0){
         if(this.isDie)
             return
+
+        if(v<0)
+        {
+            if(hurtType == 1)
+            {
+                v = v*(1-this.def/100)
+            }
+            else if(hurtType == 2)
+            {
+                v = v*(1-this.mDef/100)
+            }
+        }
+
         this.hp += v;
         if(this.hp <= 0)
         {
@@ -396,6 +448,7 @@ class PKMonsterItem extends game.BaseItem {
         }
         this.renewHp()
         this.hpBar.visible = !this.isDie && this.hp < this.maxHp
+        return v;
     }
 
 
@@ -469,10 +522,10 @@ class PKMonsterItem extends game.BaseItem {
         }
 
         this.buff.push(data);
-        this.renewBuff();
+        this.buffChange = true
     }
 
-    public getBuffByID(id){
+    public getBuffByID(id):any{
         for(var i=0;i<this.buff.length;i++)
         {
             var buff = this.buff[i];
@@ -483,13 +536,6 @@ class PKMonsterItem extends game.BaseItem {
         }
         return null;
     }
-
-    public removeBuff(buff){
-        var index = this.buff.indexOf(buff);
-        if(index != -1)
-            this.buff.splice(index,1)
-    }
-
 
     public remove(){
         egret.Tween.removeTweens(this);

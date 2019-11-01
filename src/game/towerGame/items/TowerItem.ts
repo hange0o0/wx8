@@ -33,6 +33,10 @@ class TowerItem extends game.BaseItem{
     private list: eui.List;
 
 
+    private dataProvider: eui.ArrayCollection;
+    public buffChange = false
+
+
 
 
     public monsterMV:HeroMVItem = new HeroMVItem();
@@ -63,6 +67,7 @@ class TowerItem extends game.BaseItem{
         super.childrenCreated();
 
         this.list.itemRenderer = BuffListItem;
+        this.dataProvider = this.list.dataProvider = new eui.ArrayCollection([])
 
         this.anchorOffsetX = 32
         this.anchorOffsetY = 32
@@ -98,7 +103,9 @@ class TowerItem extends game.BaseItem{
         {
             arr.push(s);
         }
-        this.list.dataProvider = new eui.ArrayCollection(arr)
+        this.dataProvider.source = arr;
+        this.dataProvider.refresh();
+        this.buffChange = false;
     }
 
 
@@ -110,6 +117,7 @@ class TowerItem extends game.BaseItem{
         MyTool.removeMC(this.disBottomMC);
         MyTool.removeMC(this.disBottomMVMC);
         this.isLighting = false
+        this.buffChange = false;
         if(this.data)
         {
             this.heroData = this.data;
@@ -128,7 +136,8 @@ class TowerItem extends game.BaseItem{
             this.mpBar.visible = false
             this.monsterMV.visible = false;
             this.monsterMV.stop();
-            this.list.dataProvider = new eui.ArrayCollection([])
+            this.dataProvider.source = [];
+            this.dataProvider.refresh()
         }
 
         if(this.stateFireMV) {
@@ -228,6 +237,11 @@ class TowerItem extends game.BaseItem{
         MyTool.removeMC(this.disBottomMVMC)
     }
 
+    public onStepRenew(){
+        if(this.buffChange)
+            this.renewBuff()
+    }
+
 
 
     public remove(){
@@ -248,10 +262,6 @@ class TowerItem extends game.BaseItem{
     public play(){
         this.mv && this.mv.play();
         this.monsterMV && this.monsterMV.play()
-    }
-
-    public getHurt(mid){
-        return this.heroData.atk
     }
 
     public onE(monsterArr){
@@ -351,6 +361,7 @@ class TowerItem extends game.BaseItem{
     }
 
     public atkMV(type,loop?){
+        this.heroData.resetAtkRate();
         var atkSpeed = this.heroData.atkSpeed
         if(atkSpeed < 1)
             atkSpeed = 1
@@ -368,7 +379,9 @@ class TowerItem extends game.BaseItem{
     public onAtkAction(){
         this.heroData.addEnergy(1);
         if(this.enemy)
+        {
             this.heroData.atkAction(this.enemy);
+        }
     }
 
     public onSkillAction(){

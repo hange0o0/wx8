@@ -145,7 +145,7 @@ class HeroItem extends game.BaseItem {
             {
                 if(this.enemy)
                 {
-                    this.enemy.addHp(-this.atk);
+                    this.enemy.addHp(-this.atk,1);
                 }
             }
         }

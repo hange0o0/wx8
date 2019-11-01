@@ -485,6 +485,25 @@ class PKTowerUI extends game.BaseUI_wx4 {
             runTime --;
         }
 
+        //buff状态显示
+        var len = this.monsterArr.length
+        for(var i=0;i<len;i++)
+        {
+            this.monsterArr[i].onStepRenew();
+        }
+        var len = this.monsterArr.length
+        for(var i=0;i<len;i++)
+        {
+            this.monsterArr[i].onStepRenew();
+        }
+        var gunArr = this.pkMap.gunArr;
+        len = gunArr.length;
+        for(var i=0;i<len;i++)
+        {
+            gunArr[i].onStepRenew();
+        }
+
+
         MyTool.runListFun(this.list,'onE');
         this.pkMap.sortY();
         if(TC.wudiEnd &&  TC.wudiEnd < TC.actionStep)//移除无敌显示
@@ -502,13 +521,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
     private onStep(){
 
         TC.onStep();
-        for(var s in HeroData.hDatas)
-        {
-            var heroData = HeroData.hDatas[s];
-            heroData.autoAddMp();
-            heroData.buffRun();
-            heroData.onStep();
-        }
+
 
 
         var len = this.monsterArr.length;
@@ -524,6 +537,14 @@ class PKTowerUI extends game.BaseUI_wx4 {
                 continue;
             }
             mItem.onE();
+        }
+
+        for(var s in HeroData.hDatas)
+        {
+            var heroData = HeroData.hDatas[s];
+            heroData.autoAddMp();
+            heroData.buffRun();
+            heroData.onStep();
         }
 
         var len = this.bulletArr.length;
@@ -563,8 +584,6 @@ class PKTowerUI extends game.BaseUI_wx4 {
             var gItem = gunArr[i];
             gItem.onE(this.monsterArr);
         }
-
-        MyTool.runListFun(this.list,'onE')
     }
 
     public addMonster(mid){
@@ -591,15 +610,16 @@ class PKTowerUI extends game.BaseUI_wx4 {
         newItem.y = data.y
     }
 
-    public createBullet(owner,target){
+    public createBullet(owner,target,sp?){
         var bullet = PKBulletItem.createItem();
         this.bulletArr.push(bullet);
         this.pkMap.topCon.addChild(bullet);
         bullet.data = {
             owner:owner,
             target:target,
+            sp:sp
         }
-        bullet.resetXY(owner.x,owner.y - 50)
+        bullet.resetXY(owner.relateTower.x,owner.relateTower.y - 50)
         return bullet;
     }
 

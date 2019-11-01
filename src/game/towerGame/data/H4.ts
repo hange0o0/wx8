@@ -19,9 +19,8 @@ class H4 extends HeroData{
         var atkList = this.getNearEnemys();
         if(atkList.length == 0)
             return false;
-        ArrayUtil_wx4.sortByField(atkList,['totalDis'],[0])
 
-        var enemy = atkList[0]
+        var enemy = ArrayUtil_wx4.getMinValue(atkList,'totalDis')
         var enemys = [enemy]
         var len = 50;
         for(var i=0;i<atkList.length;i++)
@@ -34,13 +33,13 @@ class H4 extends HeroData{
         }
 
 
-        var hurt = this.vo.getSkillValue(1)
+        var hurt = this.vo.getSkillValue(1)*this.currentAtkRate
         var cd = PKTool.getStepByTime(this.vo.getSkillValue(2)*1000)
         for(var i=0;i<enemys.length;i++)
         {
             var item = enemys[i];
             item.setYun(cd)
-            item.addHp(-hurt)
+            item.addHp(-hurt,2)
             item.flyMV();
         }
 
@@ -54,9 +53,9 @@ class H4 extends HeroData{
         var atkList = this.getNearEnemys();
         if(atkList.length == 0)
             return false;
-        var hurt = this.vo.getSkillValue(3);
+        var hurt = this.vo.getSkillValue(3)*this.currentAtkRate;
         var item = ArrayUtil_wx4.getMaxValue(atkList,'hp');
-        item.addHp(-hurt);
+        item.addHp(-hurt,2);
         return true;
     }
 

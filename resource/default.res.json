@@ -1972,6 +1972,16 @@
 			"name":"skill8_json",
 			"type":"json",
 			"url":"game_assets2/ani/skill8.json"
+		},
+		{
+			"name":"buff_noskill_png",
+			"type":"image",
+			"url":"game_assets2/buff/buff_noskill.png"
+		},
+		{
+			"name":"skill22_png",
+			"type":"image",
+			"url":"game_assets2/ani/skill22.png"
 		}
 	]
 }
