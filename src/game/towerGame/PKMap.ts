@@ -268,9 +268,15 @@ class PKMap extends game.BaseContainer_wx4 {
         }
     }
 
-    public showTowerLight(x,y){
-        var tower = this.getTowerByPos(x,y)
-        tower && tower.showLight(this);
+    public showTowerLight(x,y,r){
+        for(var i = 0;i<this.gunArr.length;i++)
+        {
+            var tower = this.gunArr[i];
+            if(tower.posX == x && tower.posY == y)
+                tower.showBottomMC(r);
+            else
+                tower.showBottomMC(0);
+        }
     }
 
     public renewTower(gunData,showDis?){
@@ -292,8 +298,6 @@ class PKMap extends game.BaseContainer_wx4 {
             gunItem.x = x*64 + 32
             gunItem.y = y*64 + 32
             gunItem.data = gunData[s]?HeroData.getHero(gunData[s]):0
-            if(showDis)
-                gunItem.resetBottomMC(this,this.bottomCon)
         }
     }
 
@@ -353,8 +357,8 @@ class PKMap extends game.BaseContainer_wx4 {
             var currentItem = this.roleCon.getChildAt(i)
             if(currentItem.y < lastItem.y)//深度不对，调整
             {
-                var index = i-1;
-                for(var j = index - 1;j>=0;j--)
+                var index = 0;
+                for(var j = i - 2;j>=0;j--)
                 {
                     var lastItem = this.roleCon.getChildAt(j)
                     if(currentItem.y > lastItem.y)

@@ -5,6 +5,7 @@ class H14 extends HeroData{
 
     public skillStep = 0
     public lastEnergySkillTime = 0
+    public loopEnergy = 10000;
 
     public canSkill(){
         var b = super.canSkill();
@@ -31,8 +32,9 @@ class H14 extends HeroData{
         if(!this.relateTower)
             return false;
 
-        this.skillStep = this.vo.getSkillValue(4)
+        this.skillStep = this.vo.getSkillValue(3)
         this.lastEnergySkillTime = 0;
+        this.stopStep = 9999;
         return true;
     }
 
@@ -45,6 +47,14 @@ class H14 extends HeroData{
         if(TC.actionStep - this.lastEnergySkillTime < TC.frameRate)
             return;
         this.iceAction();
+
+        this.skillStep --
+        this.lastEnergySkillTime = TC.actionStep
+        if(this.skillStep<=0)
+        {
+            this.stopStep = 0;
+            this.relateTower.standMV()
+        }
     }
 
 

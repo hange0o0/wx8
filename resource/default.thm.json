@@ -50,6 +50,7 @@
 		"resource/skin/game/NotEnoughCoinUISkin.exml",
 		"resource/skin/game/rank/RankItemSkin.exml",
 		"resource/skin/game/rank/RankUISkin.exml",
+		"resource/skin/game/towerGame/items/HPBarSkin2.exml",
 		"resource/skin/game/towerGame/items/TowerItemSkin.exml",
 		"resource/skin/game/skill/GunInfoUISkin.exml",
 		"resource/skin/game/skill/ShareUnlockUISkin.exml",

@@ -99,6 +99,7 @@
 		"bin-debug/game/towerGame/items/DragHeroItem.js",
 		"bin-debug/game/towerGame/items/HeroItem.js",
 		"bin-debug/commont/GameEvent.js",
+		"bin-debug/game/towerGame/items/HPBar2.js",
 		"bin-debug/game/towerGame/items/MonsterHeadItem.js",
 		"bin-debug/game/towerGame/items/PKBulletItem.js",
 		"bin-debug/game/towerGame/items/PKMonsterItem.js",

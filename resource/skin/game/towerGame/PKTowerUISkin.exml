@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="PKTowerUISkin" width="640" height="1136" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:ns1="*">
-	<e:Image id="bg" source="bg_10_jpg" left="0" right="0" top="0" bottom="0" fillMode="repeat" visible="false"/>
+	<e:Image id="bg" source="bg_10_jpg" left="0" right="0" top="0" bottom="0" fillMode="repeat"/>
 	<e:Label id="levetText" text="第 10 关" y="30" horizontalCenter="0" stroke="3" size="24" bold="true"/>
 	<e:Group x="0" bottom="0" width="640">
 		<e:Image source="main_bg_01_png" scale9Grid="13,13,84,84" height="200" y="0" x="0" width="640"/>

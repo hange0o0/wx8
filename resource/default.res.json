@@ -1982,6 +1982,21 @@
 			"name":"skill22_png",
 			"type":"image",
 			"url":"game_assets2/ani/skill22.png"
+		},
+		{
+			"name":"arc_1_png",
+			"type":"image",
+			"url":"game_assets2/ani/arc/arc_1.png"
+		},
+		{
+			"name":"arc_2_png",
+			"type":"image",
+			"url":"game_assets2/ani/arc/arc_2.png"
+		},
+		{
+			"name":"arc_3_png",
+			"type":"image",
+			"url":"game_assets2/ani/arc/arc_3.png"
 		}
 	]
 }

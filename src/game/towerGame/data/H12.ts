@@ -5,6 +5,7 @@ class H12 extends HeroData{
 
     private skillStep = 0
     private lastEnergySkillTime = 0
+    public loopEnergy = 10000;
 
     public canSkill(){
         var b = super.canSkill();
@@ -47,6 +48,7 @@ class H12 extends HeroData{
 
         this.skillStep = this.vo.getSkillValue(4)
         this.lastEnergySkillTime = 0;
+        this.stopStep = 9999;
         return true;
     }
 
@@ -59,6 +61,7 @@ class H12 extends HeroData{
         if(TC.actionStep - this.lastEnergySkillTime < TC.frameRate)
             return;
 
+        this.skillStep --;
         var hurt = this.vo.getSkillValue(3)*this.currentAtkRate;
         this.lastEnergySkillTime = TC.actionStep;
         var monsterArr = PKTowerUI.getInstance().monsterArr;
@@ -70,6 +73,12 @@ class H12 extends HeroData{
             if(mItem.isDie)
                 continue
             mItem.addHp(-hurt,2)
+        }
+
+        if(this.skillStep<=0)
+        {
+            this.stopStep = 0;
+            this.relateTower.standMV()
         }
     }
 }

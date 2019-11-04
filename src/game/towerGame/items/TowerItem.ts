@@ -27,10 +27,11 @@ class TowerItem extends game.BaseItem{
     }
 
     private disBottomMC: eui.Image;
-    private disBottomMVMC: eui.Image;
-    private energyBar: HPBar;
-    private mpBar: HPBar;
+    private energyBar: HPBar2;
+    private mpBar: HPBar2;
     private list: eui.List;
+    private doubleText: eui.Label;
+
 
 
     private dataProvider: eui.ArrayCollection;
@@ -59,7 +60,9 @@ class TowerItem extends game.BaseItem{
 
 
     public enemy
-    public hurtStep//攻击到达时间
+    public atkMVBegin
+    public isHurt//已产生害
+    public isAtkMVOver//攻击动画表现完
     public hurtType//攻击类型
 
 
@@ -88,6 +91,19 @@ class TowerItem extends game.BaseItem{
         this.addChildAt(this.monsterMV,1)
         this.monsterMV.x = 32;
         this.monsterMV.y = 32;
+
+
+        this.addChildAt(this.disBottomMC,0)
+    }
+
+    public changeScale(scale){
+        egret.Tween.get(this,{onChange:()=>{
+            this.monsterMV.scaleY = this.scale
+            if(this.monsterMV.scaleX > 0)
+                this.monsterMV.scaleX = this.scale
+            else
+                this.monsterMV.scaleX = -this.scale
+        }}).to({scale:scale},300)
     }
 
     public renewBuff(){
@@ -106,6 +122,7 @@ class TowerItem extends game.BaseItem{
         this.dataProvider.source = arr;
         this.dataProvider.refresh();
         this.buffChange = false;
+        this.monsterMV.setSpeed(30/this.heroData.atkSpeed)
     }
 
 
@@ -114,10 +131,15 @@ class TowerItem extends game.BaseItem{
             return;
         this.heroData = null;
         this.mv.gotoAndPay()
-        MyTool.removeMC(this.disBottomMC);
-        MyTool.removeMC(this.disBottomMVMC);
+        this.disBottomMC.visible = false;
         this.isLighting = false
         this.buffChange = false;
+        this.isHurt = false
+        this.isAtkMVOver = false
+        this.atkMVBegin = 0
+        this.monsterMV.scaleY = this.scale
+        this.monsterMV.scaleX = this.scale
+        this.doubleText.visible = false
         if(this.data)
         {
             this.heroData = this.data;
@@ -186,60 +208,28 @@ class TowerItem extends game.BaseItem{
         return MyTool.getDis(this,m2)
     }
 
-    public resetBottomMC(map?,con?){
-        return;
-        //if(!this.gvo)
-        //    return;
-        //map = map || this.lastMap;
-        //if(!map)
-        //    return;
-        //
-        //this.lastMap = map;
-        //egret.Tween.removeTweens(this.disBottomMC)
-        //con && con.addChild(this.disBottomMC);
-        //this.setItemSize(map,this.disBottomMC)
+    public showBottomMC(r){
+        if(!r)
+        {
+            this.disBottomMC.visible = false
+            return;
+        }
+
+        this.disBottomMC.visible = true
+        this.disBottomMC.width = this.disBottomMC.height = r*2;
     }
 
-    //public setItemSize(map,mc){
-    //    var atkDis = this.atkDis
-    //    if(atkDis > this.gvo.atkdis)
-    //        atkDis = this.gvo.atkdis + 1;
-    //
-    //    var xx = Math.floor(this.x/64)
-    //    var yy = Math.floor(this.y/64)
-    //
-    //    var left = Math.min(xx,atkDis)
-    //    var right = Math.min(map.ww - (xx + 1),atkDis)
-    //    var top = Math.min(yy,atkDis)
-    //    var bottom = Math.min(map.hh - (yy + 1),atkDis)
-    //
-    //    mc.width = (left+right + 1)*64
-    //    mc.height = (top+bottom + 1)*64
-    //    mc.anchorOffsetX = left*64 + 32;
-    //    mc.anchorOffsetY = top*64 + 32;;
-    //    mc.x = this.x
-    //    mc.y = this.y
-    //}
-
-    public showLight(pkMap){
-        //this.isLighting = true
-        //egret.Tween.removeTweens(this.disBottomMVMC)
-        //this.disBottomMVMC.alpha = 1;
-        //this.disBottomMVMC.scaleX = this.disBottomMVMC.scaleY = 0.1;
-        //this.setItemSize(pkMap,this.disBottomMVMC)
-        //pkMap.bottomCon.addChild(this.disBottomMVMC)
-        //egret.Tween.get(this.disBottomMVMC).to({alpha:0.5,scaleX:1,scaleY:1},500).
-        //    wait(1500).to({alpha:0,scaleX:0.1,scaleY:0.1},500).call(this.removeLight,this)
-    }
-
-    private removeLight(){
-        this.isLighting = false
-        MyTool.removeMC(this.disBottomMVMC)
-    }
 
     public onStepRenew(){
         if(this.buffChange)
             this.renewBuff()
+    }
+
+    public getHitPos(){
+        return {
+            x :this.x,
+            y :this.y - 40
+        }
     }
 
 
@@ -264,6 +254,13 @@ class TowerItem extends game.BaseItem{
         this.monsterMV && this.monsterMV.play()
     }
 
+    public getHurtOverTime(){
+        return this.atkMVBegin + this.heroData.atkSpeed/2
+    }
+    public getAtkMVOverTime(){
+        return this.atkMVBegin + this.heroData.atkSpeed
+    }
+
     public onE(monsterArr){
         if(!this.data)
             return;
@@ -277,28 +274,38 @@ class TowerItem extends game.BaseItem{
             this.enemy = null;
         }
 
-        if(this.hurtStep > 0)
+        if(!this.isHurt)
         {
-            this.hurtStep --;
-            if(this.hurtStep == 0)
+            if(TC.actionStep >= this.getHurtOverTime())
             {
+                this.isHurt = true;
                 if(this.hurtType == 'skill')
                     this.onSkillAction()
                 else if(this.hurtType == 'atk')
                     this.onAtkAction();
                 else if(this.hurtType == 'energy')
                     this.onEnergyAction();
+
+                if(this.heroData.currentAtkRate > 1)
+                {
+                    this.showDouble(this.heroData.currentAtkRate)
+                }
                 //else if(this.hurtType == 'bullet')
                 //    this.onEnergyAction();
             }
         }
 
-
-        if(this.heroData.stopStep > 0)
+        if(this.heroData.stopStep>0)
         {
             this.heroData.stopStep --;
             return;
         }
+
+        if(TC.actionStep < this.getAtkMVOverTime())
+        {
+            return;
+        }
+
 
         //判断能不能技能
         if(this.heroData.canSkill())
@@ -366,9 +373,10 @@ class TowerItem extends game.BaseItem{
         if(atkSpeed < 1)
             atkSpeed = 1
         this.monsterMV.atk(loop);
-        this.hurtStep = atkSpeed/2;
+        this.atkMVBegin = TC.actionStep;
         this.hurtType = type
         this.heroData.stopStep = atkSpeed;
+        this.isHurt = false;
     }
 
     public standMV(){
@@ -377,6 +385,7 @@ class TowerItem extends game.BaseItem{
     }
 
     public onAtkAction(){
+        console.log('atk',TC.actionStep)
         this.heroData.addEnergy(1);
         if(this.enemy)
         {
@@ -424,5 +433,19 @@ class TowerItem extends game.BaseItem{
 
         if(b)
             this.heroData.addEnergy(1);
+    }
+
+    public showDouble(value){
+        egret.Tween.removeTweens(this.doubleText)
+        this.doubleText.text = 'x ' + MyTool.toFixed(value,1)
+        if(this.heroData.buff.length > 0)
+            this.doubleText.y = this.list.y - 24
+        else
+            this.doubleText.y = this.list.y
+        this.addChild(this.doubleText)
+        this.doubleText.visible = true
+        egret.Tween.get(this.doubleText).wait(300).to({y:this.doubleText.y-30},300).call(()=>{
+            this.doubleText.visible = false
+        })
     }
 }

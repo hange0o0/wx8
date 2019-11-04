@@ -207,6 +207,8 @@ class PKMonsterItem extends game.BaseItem {
     }
 
     public setYun(step){
+        if(this.isDie)
+            return;
         if(!step)
             return;
         if(!this.yunStep)//表现晕
@@ -453,11 +455,15 @@ class PKMonsterItem extends game.BaseItem {
 
 
     public runMV(){
+        if(this.isDie)
+            return;
         if(this.monsterMV.state != MonsterMV.STAT_RUN )
             this.monsterMV.run();
     }
 
     public standMV(){
+        if(this.isDie)
+            return;
         if(this.monsterMV.state != MonsterMV.STAT_STAND)
             this.monsterMV.stand();
     }

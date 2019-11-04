@@ -178,7 +178,7 @@ class TowerCode {
         var step = 10
 
         var roadIndex = 0;
-        var maxCost = 500 * Math.pow(1.005,level)
+        var maxCost = 1000 * Math.pow(1.005,level)
         var roundTimeStep = 30*15 + Math.floor(Math.pow(level,1.1))
 
         while(monsterList.length > 0)
@@ -292,5 +292,31 @@ class TowerCode {
             }
         }
         return walkArr
+    }
+
+    public showLight(from,to){
+        var mv = MovieSimpleSpirMC.create();
+        var arr = [];
+        for(var i=1;i<=3;i++)
+        {
+            arr.push( 'arc_' + i + '_png')
+        }
+
+        mv.setData(arr,84)
+        mv.once('complete',()=>{
+            mv.dispose();
+        },this)
+        mv.gotoAndPay(0,1)
+
+        mv.icon.fillMode = 'repeat'
+        mv.icon.width = MyTool.getDis(from,to);
+        mv.anchorOffsetY = 35/2
+        mv.anchorOffsetX = 0
+        PKTowerUI.getInstance().addToTopCon(mv);
+        mv.x = from.x
+        mv.y = from.y
+
+        var angle = Math.atan2(to.y-from.y,to.x-from.x)
+        mv.rotation = angle/Math.PI*180
     }
 }

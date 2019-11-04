@@ -23,7 +23,7 @@ class HeroData{
 
     //暴击相关
     public doubleRate=0
-    public doubleValue=0
+    public doubleValue=0.5
 
 
     public skillCD = 30*5
@@ -41,12 +41,14 @@ class HeroData{
     public bulletNum = 0
 
     public currentAtkRate = 1;//这次攻击是否是暴击
+    public stopAddEnergy = false
 
     public reset(){
         var PKM = PKManager.getInstance();
         this.relateTower = null;
         this.energy = 0;
         this.stopStep = 0;
+        this.stopAddEnergy = false;
         this.lastAtkTime = -9999;
         this.lastSkillTime = -9999;
         this.buff.length = 0;
@@ -154,6 +156,8 @@ class HeroData{
     }
 
     public addEnergy(v){
+        if(this.stopAddEnergy && v > 0)
+            return;
         this.energy += v;
         if(this.energy > this.maxEnergy)
             this.energy = this.maxEnergy;

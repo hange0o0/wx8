@@ -38,9 +38,10 @@ class H4 extends HeroData{
         for(var i=0;i<enemys.length;i++)
         {
             var item = enemys[i];
-            item.setYun(cd)
+
             item.addHp(-hurt,2)
             item.flyMV();
+            item.setYun(cd)
         }
 
         return true;

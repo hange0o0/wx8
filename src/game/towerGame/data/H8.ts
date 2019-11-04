@@ -7,7 +7,7 @@ class H8 extends HeroData{
         //super.atkAction(enemy)
         var monsterArr = PKTowerUI.getInstance().monsterArr;
         var len = monsterArr.length;
-        var atkDis = 50;
+        var atkDis = 30;
 
         for(var i=0;i<len;i++)
         {

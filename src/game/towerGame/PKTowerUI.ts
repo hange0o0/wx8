@@ -53,6 +53,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
     public maxPage = 1;
 
     public selectItem;
+    public showLightPos
     public constructor() {
         super();
         this.skinName = "PKTowerUISkin";
@@ -111,6 +112,11 @@ class PKTowerUI extends game.BaseUI_wx4 {
         var towerPos = this.isTowerPos(x,y)
         if(towerPos)
         {
+            this.showLightPos = {
+                tid:this.towerPos[towerPos.x+'_' + towerPos.y],
+                x:towerPos.x,
+                y:towerPos.y
+            }
             this.touchPos = {
                 x:towerPos.x,
                 y:towerPos.y,
@@ -186,6 +192,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
         }
 
         var towerPos = this.isTowerPos(x,y)
+
         if(towerPos)
         {
             var tower = this.pkMap.getTowerByPos(towerPos.x,towerPos.y)
@@ -197,10 +204,20 @@ class PKTowerUI extends game.BaseUI_wx4 {
             {
                 this.setDragOK(false)
             }
+
+            this.showLightPos = {
+                tid:this.dragHero.data,
+                x:towerPos.x,
+                y:towerPos.y
+            }
         }
         else
         {
             this.setDragOK(false)
+
+            this.showLightPos = {
+                hide:true
+            }
         }
 
 
@@ -266,6 +283,10 @@ class PKTowerUI extends game.BaseUI_wx4 {
             this.onTowerChange();
         }
 
+        this.showLightPos = {
+            hide:true
+        }
+
 
     }
 
@@ -302,21 +323,21 @@ class PKTowerUI extends game.BaseUI_wx4 {
         if(y >= this.hh || y < 0 || x >= this.ww || x < 0)
             return;
 
-        if(this.mapData[y][x] == 2 && this.towerPos[x+'_'+y])
-        {
-            var tower = this.pkMap.getTowerByPos(x,y);
-            if(tower.isLighting)
-            {
-                //GunInfoUI.getInstance().show(tower)
-            }
-            else
-            {
-                tower.showLight(this.pkMap)
-                //if(UM_wx4.level < 10)
-                //    MyWindow.ShowTips('再次点击底座可查看详情')
-            }
-            return;1
-        }
+        //if(this.mapData[y][x] == 2 && this.towerPos[x+'_'+y])
+        //{
+        //    var tower = this.pkMap.getTowerByPos(x,y);
+        //    if(tower.isLighting)
+        //    {
+        //        //GunInfoUI.getInstance().show(tower)
+        //    }
+        //    else
+        //    {
+        //        tower.showLight(this.pkMap)
+        //        //if(UM_wx4.level < 10)
+        //        //    MyWindow.ShowTips('再次点击底座可查看详情')
+        //    }
+        //    return;1
+        //}
     }
 
 
@@ -377,6 +398,7 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
         this.bg.source = UM_wx4.getBG()
         SoundManager.getInstance().playSound('pk_bg')
+        this.showLightPos = null
 
         while(this.monsterArr.length)
         {
@@ -516,6 +538,20 @@ class PKTowerUI extends game.BaseUI_wx4 {
             ResultUI.getInstance().show(true);
         }
         this.barMC.width = (640-2)*(TC.actionStep/TC.maxStep);
+
+        if(this.showLightPos)
+        {
+            if(this.showLightPos.hide)
+            {
+                this.pkMap.showTowerLight(0,0,0)
+            }
+            else
+            {
+                var r = GunVO.getObject(this.showLightPos.tid).atkdis
+                this.pkMap.showTowerLight(this.showLightPos.x,this.showLightPos.y,r);
+            }
+            this.showLightPos = null;
+        }
     }
 
     private onStep(){
@@ -625,5 +661,8 @@ class PKTowerUI extends game.BaseUI_wx4 {
 
     public addToRoleCon(mc){
         this.pkMap.roleCon.addChild(mc);
+    }
+    public addToTopCon(mc){
+        this.pkMap.topCon.addChild(mc);
     }
 }
